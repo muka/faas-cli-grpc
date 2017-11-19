@@ -1,0 +1,9 @@
+provider:
+  name: faas
+  gateway: http://localhost:8080
+
+functions:
+  test1:
+    lang: node
+    handler: ./test1
+    image: localhost:5000/test1

@@ -10,6 +10,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+var server *grpc.Server
+
 type faas struct{}
 
 func newFaasService() FaasCliServiceServer {
@@ -27,24 +29,37 @@ func okResponse() *Response {
 	return newResponse(http.StatusOK)
 }
 
-func badRequestResponse() *Response {
-	return newResponse(http.StatusBadRequest)
+func badRequestResponse(errors ...error) *Response {
+	r := newResponse(http.StatusBadRequest)
+	for i := 0; i < len(errors); i++ {
+		r.Errors = append(r.Errors, errors[i].Error())
+	}
+	return r
 }
 
-//Run start the gRPC server
-func Run() error {
-	listen, err := net.Listen("tcp", ":50051")
+//Start the gRPC server
+func Start(uri string) error {
+
+	if server != nil {
+		return nil
+	}
+
+	listen, err := net.Listen("tcp", uri)
 	if err != nil {
 		return err
 	}
-	server := grpc.NewServer()
+	server = grpc.NewServer()
 	RegisterFaasCliServiceServer(server, newFaasService())
 	server.Serve(listen)
 	return nil
 }
 
-func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) {
-	return okResponse(), nil
+//Stop the server
+func Stop() {
+	if server == nil {
+		return
+	}
+	server.Stop()
 }
 
 func (f *faas) Deploy(ctx context.Context, msg *DeployRequest) (*Response, error) {
