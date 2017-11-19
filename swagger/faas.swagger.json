@@ -453,8 +453,8 @@
       "type": "object",
       "properties": {
         "code": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "message": {
           "type": "string"
