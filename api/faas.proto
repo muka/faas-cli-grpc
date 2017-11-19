@@ -1,0 +1,95 @@
+
+syntax = "proto3";
+
+package api;
+
+
+// Base message with share options. Protobuf does not support inheritance so
+// those are here for copy-paste commodity
+// message FaasRequest {
+//     string yaml     = 100; // Path to YAML file describing function(s)
+//     string regex    = 101; // Regex to match with function names in YAML file")
+//     string filter   = 102; // Wildcard to match with function names in YAML file")
+// }
+
+message BuildRequest {
+      bytes archive     = 0; //
+      string image      = 1; // Docker image name to build
+      string handler    = 2; // Directory with handler for function, e.g. handler.js
+      string name       = 3; // Name of the deployed function
+      string lang       = 4; // Programming language template
+      bool noCache     = 5; // Do not use Docker's build cache
+      bool squash       = 6; // Use Docker's squash flag for smaller images [experimental]
+      int32 parallel    = 7; // Build in parallel to depth specified.
+      bool shrinkwrap   = 8; // Just write files to ./build/ folder for shrink-wrapping
+}
+
+message DeployRequest {
+    string fprocess             = 0; // Fprocess to be run by the watchdog
+    string gateway             = 1;  // Gateway URL starting with http(s)://
+    string handler             = 2;  // Directory with handler for function, e.g. handler.js
+    string image               = 3;  // Docker image name to build
+    string lang                = 4;  // Programming language template
+    string name                = 5;  // Name of the deployed function
+    string network             = 6;  // Name of the network
+    repeated string env        = 7;  // Set one or more environment variables (ENVVAR=VALUE)
+    repeated string label      = 8;  // Set one or more label (LABEL=VALUE)
+    bool replace               = 9;  // Replace any existing function
+    bool update                = 10; // Update existing functions
+    repeated string constraint = 11; // Apply a constraint to the function
+    repeated string secret     = 12; // Give the function access to a secure secret
+}
+
+message InvokeRequest {
+    string name         = 0; // Name of the deployed function
+    string gateway      = 1; // Gateway URL starting with http(s)://
+    string contentType = 2; // The content-type HTTP header such as application/json
+    repeated string query        = 3; // pass query-string options
+}
+
+message ListRequest {
+    string gateway  = 0; // Gateway URL starting with http(s)://
+    bool verbose    = 1; // Verbose output for the function list
+}
+
+message LoginRequest {
+    string gateway = 0; // Gateway URL starting with http(s)://
+    string username = 1; // Gateway username
+    string password = 2; // Gateway password
+    // bool password_stdin = 3; // Reads the gateway password from stdin
+}
+
+message LogoutRequest {
+    string gateway = 0; // Gateway URL starting with http(s)://
+}
+
+message NewFunctionRequest {
+    string lang     = 0; // Language or template to use
+    string gateway  = 1; // Gateway URL to store in YAML stack file
+    bool list       = 2; // List available languages
+}
+
+message PushRequest {
+    int32 parallel = 0; // Push images in parallel to depth specified.")
+}
+
+message TemplatePullRequest {
+    bool overwrite = 0; // Overwrite existing templates?
+    string repositoryURL = 1; // repository URL
+}
+
+message VersionRequest {
+    bool shortVersion = 0; // Just print Git SHA
+}
+
+message Response {
+  int64 code             = 0;
+  string message         = 1;
+  repeated string errors = 2;
+}
+
+service TestService {
+
+  rpc Build(BuildRequest) returns (Response);
+
+}
