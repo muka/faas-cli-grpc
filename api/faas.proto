@@ -17,12 +17,16 @@ message BuildRequest {
       string image      = 1; // Docker image name to build
       string handler    = 2; // Directory with handler for function, e.g. handler.js
       string name       = 3; // Name of the deployed function
-      string lang       = 4; // Programming language template
+      string language       = 4; // Programming language template
       bool noCache      = 5; // Do not use Docker's build cache
       bool squash       = 6; // Use Docker's squash flag for smaller images [experimental]
       int32 parallel    = 7; // Build in parallel to depth specified.
       bool shrinkwrap   = 8; // Just write files to ./build/ folder for shrink-wrapping
       bytes archive     = 9;
+
+      string yaml       = 100; // Path to YAML file describing function(s)
+      string regex      = 101; // Regex to match with function names in YAML file")
+      string filter     = 102; // Wildcard to match with function names in YAML file")
 }
 
 message DeployRequest {

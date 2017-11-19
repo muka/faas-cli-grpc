@@ -37,31 +37,32 @@ func TestBuild(t *testing.T) {
 		t.FailNow()
 	}
 
-	const tmpArchive = "../tmp/tmp-test1.zip"
-	//Create a tmp archive
-	if ziperr := Zip("../test", tmpArchive); ziperr != nil {
-		log.Fatal(ziperr)
-		t.FailNow()
-	}
-
-	// read buffer
-	buf, readerr := ioutil.ReadFile(tmpArchive)
+	buf, readerr := ioutil.ReadFile("../test/test1.zip")
 	if readerr != nil {
 		log.Fatal(readerr)
 		t.FailNow()
 	}
 
 	client := NewFaasCliServiceClient(conn)
-	client.Build(context.Background(), &BuildRequest{
+	res, err := client.Build(context.Background(), &BuildRequest{
 		Archive: buf,
+		Yaml:    "test1.yml",
+		// Handler: "./test1"
 		// Image:      "localhost:5000/test1",
-		// Lang:       "node",
+		// Language:       "node",
 		// Name:       "test1",
 		NoCache:    true,
 		Parallel:   5,
 		Shrinkwrap: true,
 		Squash:     true,
 	})
+
+	if err != nil {
+		log.Fatal(err)
+		t.FailNow()
+	}
+
+	log.Printf("Result: %d %s", res.Code, res.Message)
 
 	Stop()
 }

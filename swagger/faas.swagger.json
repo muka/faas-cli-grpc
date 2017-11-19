@@ -288,7 +288,7 @@
         "name": {
           "type": "string"
         },
-        "lang": {
+        "language": {
           "type": "string"
         },
         "noCache": {
@@ -310,6 +310,15 @@
         "archive": {
           "type": "string",
           "format": "byte"
+        },
+        "yaml": {
+          "type": "string"
+        },
+        "regex": {
+          "type": "string"
+        },
+        "filter": {
+          "type": "string"
         }
       }
     },

@@ -9,6 +9,10 @@ deps:
 
 clean:
 
+test:
+	cd ./test && zip -r test1.zip test1.yml ./test1
+	go test -v ./api
+
 build: deps
 
 docker/build: build

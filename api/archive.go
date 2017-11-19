@@ -9,28 +9,10 @@ import (
 	"strings"
 )
 
-//Zip compress a directory to ZIP
-func Zip(source, target string) error {
-	zipfile, err := os.Create(target)
-	if err != nil {
-		return err
-	}
-	defer zipfile.Close()
+func addDir(source string, archive *zip.Writer) error {
+	baseDir := filepath.Base(source)
+	err := filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 
-	archive := zip.NewWriter(zipfile)
-	defer archive.Close()
-
-	info, err := os.Stat(source)
-	if err != nil {
-		return nil
-	}
-
-	var baseDir string
-	if info.IsDir() {
-		baseDir = filepath.Base(source)
-	}
-
-	filepath.Walk(source, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -56,19 +38,72 @@ func Zip(source, target string) error {
 		}
 
 		if info.IsDir() {
-			return nil
+			return addDir(filepath.Join(source, info.Name()), archive)
 		}
 
 		file, err := os.Open(path)
 		if err != nil {
 			return err
 		}
+
 		defer file.Close()
 		_, err = io.Copy(writer, file)
+
 		return err
 	})
 
 	return err
+}
+
+//Zip compress a directory to ZIP
+func Zip(target string, sources ...string) error {
+	zipfile, err := os.Create(target)
+	if err != nil {
+		return err
+	}
+	defer zipfile.Close()
+
+	archive := zip.NewWriter(zipfile)
+	defer archive.Close()
+
+	for _, source := range sources {
+
+		info, err := os.Stat(source)
+		if err != nil {
+			return nil
+		}
+
+		if info.IsDir() {
+			if err := addDir(source, archive); err != nil {
+				return err
+			}
+		} else {
+
+			header, err := zip.FileInfoHeader(info)
+			if err != nil {
+				return err
+			}
+
+			writer, err := archive.CreateHeader(header)
+			if err != nil {
+				return err
+			}
+
+			file, err := os.Open(source)
+			if err != nil {
+				file.Close()
+				return err
+			}
+			_, err = io.Copy(writer, file)
+			if err != nil {
+				file.Close()
+				return err
+			}
+
+			file.Close()
+		}
+	}
+	return nil
 }
 
 //Unzip uncompress a ZIP archive
