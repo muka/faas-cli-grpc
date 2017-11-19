@@ -1,0 +1,483 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "faas.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/build": {
+      "post": {
+        "operationId": "Build",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiBuildRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/deploy": {
+      "post": {
+        "operationId": "Deploy",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiDeployRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/invoke": {
+      "post": {
+        "operationId": "Invoke",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiInvokeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/list": {
+      "post": {
+        "operationId": "List",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/login": {
+      "post": {
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/logout": {
+      "post": {
+        "operationId": "Logout",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiLogoutRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/new": {
+      "post": {
+        "operationId": "NewFunction",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiNewFunctionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/push": {
+      "post": {
+        "operationId": "Push",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiPushRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/template/pull": {
+      "post": {
+        "operationId": "TemplatePull",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/apiTemplatePullRequest"
+            }
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    },
+    "/v1/version": {
+      "get": {
+        "operationId": "Version",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/apiResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "shortVersion",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "format": "boolean"
+          }
+        ],
+        "tags": [
+          "FaasCliService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "apiBuildRequest": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "handler": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string"
+        },
+        "noCache": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "squash": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "parallel": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shrinkwrap": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "archive": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "apiDeployRequest": {
+      "type": "object",
+      "properties": {
+        "fprocess": {
+          "type": "string"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "handler": {
+          "type": "string"
+        },
+        "image": {
+          "type": "string"
+        },
+        "lang": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "label": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "update": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "constraint": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "secret": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "apiInvokeRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "contentType": {
+          "type": "string"
+        },
+        "query": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "apiListRequest": {
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "type": "string"
+        },
+        "verbose": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "apiLoginRequest": {
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "apiLogoutRequest": {
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "type": "string"
+        }
+      }
+    },
+    "apiNewFunctionRequest": {
+      "type": "object",
+      "properties": {
+        "lang": {
+          "type": "string"
+        },
+        "gateway": {
+          "type": "string"
+        },
+        "list": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "apiPushRequest": {
+      "type": "object",
+      "properties": {
+        "parallel": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "apiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "format": "int64"
+        },
+        "message": {
+          "type": "string"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "apiTemplatePullRequest": {
+      "type": "object",
+      "properties": {
+        "overwrite": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "repositoryURL": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

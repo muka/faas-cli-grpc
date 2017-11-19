@@ -3,6 +3,7 @@ syntax = "proto3";
 
 package api;
 
+import "google/api/annotations.proto";
 
 // Base message with share options. Protobuf does not support inheritance so
 // those are here for copy-paste commodity
@@ -13,83 +14,139 @@ package api;
 // }
 
 message BuildRequest {
-      bytes archive     = 0; //
       string image      = 1; // Docker image name to build
       string handler    = 2; // Directory with handler for function, e.g. handler.js
       string name       = 3; // Name of the deployed function
       string lang       = 4; // Programming language template
-      bool noCache     = 5; // Do not use Docker's build cache
+      bool noCache      = 5; // Do not use Docker's build cache
       bool squash       = 6; // Use Docker's squash flag for smaller images [experimental]
       int32 parallel    = 7; // Build in parallel to depth specified.
       bool shrinkwrap   = 8; // Just write files to ./build/ folder for shrink-wrapping
+      bytes archive     = 9;
 }
 
 message DeployRequest {
-    string fprocess             = 0; // Fprocess to be run by the watchdog
-    string gateway             = 1;  // Gateway URL starting with http(s)://
-    string handler             = 2;  // Directory with handler for function, e.g. handler.js
-    string image               = 3;  // Docker image name to build
-    string lang                = 4;  // Programming language template
-    string name                = 5;  // Name of the deployed function
-    string network             = 6;  // Name of the network
-    repeated string env        = 7;  // Set one or more environment variables (ENVVAR=VALUE)
-    repeated string label      = 8;  // Set one or more label (LABEL=VALUE)
-    bool replace               = 9;  // Replace any existing function
-    bool update                = 10; // Update existing functions
-    repeated string constraint = 11; // Apply a constraint to the function
-    repeated string secret     = 12; // Give the function access to a secure secret
+    string fprocess            = 1; // Fprocess to be run by the watchdog
+    string gateway             = 2;  // Gateway URL starting with http(s)://
+    string handler             = 3;  // Directory with handler for function, e.g. handler.js
+    string image               = 4;  // Docker image name to build
+    string lang                = 5;  // Programming language template
+    string name                = 6;  // Name of the deployed function
+    string network             = 7;  // Name of the network
+    repeated string env        = 8;  // Set one or more environment variables (ENVVAR=VALUE)
+    repeated string label      = 9;  // Set one or more label (LABEL=VALUE)
+    bool replace               = 10;  // Replace any existing function
+    bool update                = 11; // Update existing functions
+    repeated string constraint = 12; // Apply a constraint to the function
+    repeated string secret     = 13; // Give the function access to a secure secret
 }
 
 message InvokeRequest {
-    string name         = 0; // Name of the deployed function
-    string gateway      = 1; // Gateway URL starting with http(s)://
-    string contentType = 2; // The content-type HTTP header such as application/json
-    repeated string query        = 3; // pass query-string options
+    string name             = 1; // Name of the deployed function
+    string gateway          = 2; // Gateway URL starting with http(s)://
+    string contentType      = 3; // The content-type HTTP header such as application/json
+    repeated string query   = 4; // pass query-string options
 }
 
 message ListRequest {
-    string gateway  = 0; // Gateway URL starting with http(s)://
-    bool verbose    = 1; // Verbose output for the function list
+    string gateway  = 1; // Gateway URL starting with http(s)://
+    bool verbose    = 2; // Verbose output for the function list
 }
 
 message LoginRequest {
-    string gateway = 0; // Gateway URL starting with http(s)://
-    string username = 1; // Gateway username
-    string password = 2; // Gateway password
+    string gateway = 1; // Gateway URL starting with http(s)://
+    string username = 2; // Gateway username
+    string password = 3; // Gateway password
     // bool password_stdin = 3; // Reads the gateway password from stdin
 }
 
 message LogoutRequest {
-    string gateway = 0; // Gateway URL starting with http(s)://
+    string gateway = 1; // Gateway URL starting with http(s)://
 }
 
 message NewFunctionRequest {
-    string lang     = 0; // Language or template to use
-    string gateway  = 1; // Gateway URL to store in YAML stack file
-    bool list       = 2; // List available languages
+    string lang     = 1; // Language or template to use
+    string gateway  = 2; // Gateway URL to store in YAML stack file
+    bool list       = 3; // List available languages
 }
 
 message PushRequest {
-    int32 parallel = 0; // Push images in parallel to depth specified.")
+    int32 parallel = 1; // Push images in parallel to depth specified.")
 }
 
 message TemplatePullRequest {
-    bool overwrite = 0; // Overwrite existing templates?
-    string repositoryURL = 1; // repository URL
+    bool overwrite = 1; // Overwrite existing templates?
+    string repositoryURL = 2; // repository URL
 }
 
 message VersionRequest {
-    bool shortVersion = 0; // Just print Git SHA
+    bool shortVersion = 1; // Just print Git SHA
 }
 
 message Response {
-  int64 code             = 0;
-  string message         = 1;
-  repeated string errors = 2;
+  int64 code             = 1;
+  string message         = 2;
+  repeated string errors = 3;
 }
 
-service TestService {
-
-  rpc Build(BuildRequest) returns (Response);
-
+service FaasCliService {
+  rpc Build (BuildRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/build"
+        body: "*"
+    };
+  }
+  rpc Deploy (DeployRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/deploy"
+        body: "*"
+    };
+  }
+  rpc Invoke (InvokeRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/invoke"
+        body: "*"
+    };
+  }
+  rpc List (ListRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/list"
+        body: "*"
+    };
+  }
+  rpc Login (LoginRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/login"
+        body: "*"
+    };
+  }
+  rpc Logout (LogoutRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/logout"
+        body: "*"
+    };
+  }
+  rpc NewFunction (NewFunctionRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/new"
+        body: "*"
+    };
+  }
+  rpc Push (PushRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/push"
+        body: "*"
+    };
+  }
+  rpc TemplatePull (TemplatePullRequest) returns (Response) {
+    option (google.api.http) = {
+        post: "/v1/template/pull"
+        body: "*"
+    };
+  }
+  rpc Version (VersionRequest) returns (Response) {
+    option (google.api.http) = {
+        get: "/v1/version"
+    };
+  }
 }
