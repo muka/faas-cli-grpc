@@ -81,6 +81,7 @@ func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) 
 		}
 	}
 
+	// TODO review fetch template to allow custom template path
 	if pullErr := commands.PullTemplates(""); pullErr != nil {
 		return nil, fmt.Errorf("could not pull templates for OpenFaaS: %v", pullErr)
 	}
