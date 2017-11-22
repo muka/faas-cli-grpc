@@ -5,14 +5,12 @@ package api
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
-	"github.com/openfaas/faas-cli/builder"
 	"github.com/openfaas/faas-cli/commands"
 	"github.com/openfaas/faas-cli/stack"
 )
@@ -20,6 +18,7 @@ import (
 func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) {
 
 	var yamlFile string
+	var parsedServices *stack.Services
 
 	if len(msg.Archive) > 0 {
 
@@ -58,68 +57,45 @@ func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) 
 			return nil, errors.New("Cannot find YAML file in archive")
 		}
 
+		parsedServices, err = stack.ParseYAMLFile(yamlFile, msg.Regex, msg.Filter)
+		if err != nil {
+			return nil, err
+		}
+
+		// consider all paths as local
+		basePath := filepath.Dir(yamlFile)
+		for fname, fx := range parsedServices.Functions {
+			for i := range fx.EnvironmentFile {
+				fx.EnvironmentFile[i] = filepath.Join(basePath, fx.EnvironmentFile[i])
+			}
+			fx.Handler = filepath.Join(basePath, fx.Handler)
+			parsedServices.Functions[fname] = fx
+		}
+
 		log.Printf("yml read %s", yamlFile)
 
 	} else {
 		return nil, errors.New("Missing archive field")
 	}
 
-	// consider all paths as local
-	basePath := filepath.Dir(yamlFile)
-
-	var services stack.Services
-	if len(yamlFile) > 0 {
-		parsedServices, err := stack.ParseYAMLFile(yamlFile, msg.Regex, msg.Filter)
-		if err != nil {
-			return nil, err
-		}
-
-		if parsedServices != nil {
-			services = *parsedServices
-			for fname, fx := range services.Functions {
-				for i := range fx.EnvironmentFile {
-					fx.EnvironmentFile[i] = filepath.Join(basePath, fx.EnvironmentFile[i])
-				}
-				fx.Handler = filepath.Join(basePath, fx.Handler)
-				services.Functions[fname] = fx
-			}
-		}
+	arg := commands.BuildArguments{
+		YamlFile:     yamlFile,
+		Services:     parsedServices,
+		Filter:       msg.Filter,
+		Regex:        msg.Regex,
+		Image:        msg.Image,
+		Handler:      msg.Handler,
+		FunctionName: msg.Name,
+		Language:     msg.Language,
+		Nocache:      msg.NoCache,
+		Squash:       msg.Squash,
+		Parallel:     int(msg.Parallel),
+		Shrinkwrap:   msg.Shrinkwrap,
 	}
 
-	// TODO review fetch template to allow custom template path
-	if pullErr := commands.PullTemplates(""); pullErr != nil {
-		return nil, fmt.Errorf("could not pull templates for OpenFaaS: %v", pullErr)
-	}
-
-	if len(services.Functions) > 0 {
-		err := commands.BuildStack(&services, int(msg.Parallel), msg.Shrinkwrap)
-		if err != nil {
-			return nil, err
-		}
-		return okResponse(), nil
-	}
-
-	if len(msg.Image) == 0 {
-		return nil, fmt.Errorf("please provide a valid --image name for your Docker image")
-	}
-	if len(msg.Handler) == 0 {
-		return nil, fmt.Errorf("please provide the full path to your function's handler")
-	}
-	if len(msg.Name) == 0 {
-		return nil, fmt.Errorf("please provide the deployed --name of your function")
-	}
-
-	if err := builder.BuildImage(
-		msg.Image,
-		filepath.Join(basePath, msg.Handler),
-		msg.Name,
-		msg.Language,
-		msg.NoCache,
-		msg.Squash,
-		msg.Shrinkwrap,
-	); err != nil {
+	err := commands.Build(arg)
+	if err != nil {
 		return nil, err
 	}
-
 	return okResponse(), nil
 }
