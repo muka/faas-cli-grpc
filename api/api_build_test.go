@@ -3,6 +3,7 @@ package api
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"testing"
 	"time"
 
@@ -23,6 +24,7 @@ import (
 
 func TestBuild(t *testing.T) {
 
+	os.Setenv("workdir", "../data")
 	const uri = "localhost:51001"
 	go func() {
 		if err := Start(uri); err != nil {

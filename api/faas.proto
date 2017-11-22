@@ -76,6 +76,10 @@ message NewFunctionRequest {
 
 message PushRequest {
     int32 parallel = 1; // Push images in parallel to depth specified.")
+
+    string yaml     = 100; // Path to YAML file describing function(s)
+    string regex    = 101; // Regex to match with function names in YAML file")
+    string filter   = 102; // Wildcard to match with function names in YAML file")
 }
 
 message TemplatePullRequest {
@@ -90,7 +94,6 @@ message VersionRequest {
 message Response {
   int32 code             = 1;
   string message         = 2;
-  repeated string errors = 3;
 }
 
 service FaasCliService {

@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -24,12 +23,18 @@ func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) 
 
 	if len(msg.Archive) > 0 {
 
-		target, err := ioutil.TempDir("", "faas_"+strconv.Itoa(int(time.Now().Unix())))
-		if err != nil {
-			return nil, err
+		name := msg.Name
+		if len(msg.Name) == 0 {
+			name = "faas_" + strconv.Itoa(int(time.Now().Unix()))
 		}
 
-		err = Unzip(msg.Archive, target)
+		target := filepath.Join(
+			os.Getenv("workdir"),
+			"./store/",
+			name,
+		)
+
+		err := Unzip(msg.Archive, target)
 		if err != nil {
 			return nil, err
 		}

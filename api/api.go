@@ -29,14 +29,6 @@ func okResponse() *Response {
 	return newResponse(http.StatusOK)
 }
 
-func badRequestResponse(errors ...error) *Response {
-	r := newResponse(http.StatusBadRequest)
-	for i := 0; i < len(errors); i++ {
-		r.Errors = append(r.Errors, errors[i].Error())
-	}
-	return r
-}
-
 //Start the gRPC server
 func Start(uri string) error {
 
@@ -83,10 +75,6 @@ func (f *faas) Logout(ctx context.Context, msg *LogoutRequest) (*Response, error
 }
 
 func (f *faas) NewFunction(ctx context.Context, msg *NewFunctionRequest) (*Response, error) {
-	return okResponse(), nil
-}
-
-func (f *faas) Push(ctx context.Context, msg *PushRequest) (*Response, error) {
 	return okResponse(), nil
 }
 

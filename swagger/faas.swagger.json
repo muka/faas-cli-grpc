@@ -455,6 +455,15 @@
         "parallel": {
           "type": "integer",
           "format": "int32"
+        },
+        "yaml": {
+          "type": "string"
+        },
+        "regex": {
+          "type": "string"
+        },
+        "filter": {
+          "type": "string"
         }
       }
     },
@@ -467,12 +476,6 @@
         },
         "message": {
           "type": "string"
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
