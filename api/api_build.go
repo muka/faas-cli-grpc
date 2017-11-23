@@ -41,14 +41,14 @@ func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) 
 
 		if len(msg.Yaml) > 0 {
 			ymlpath := filepath.Join(target, msg.Yaml)
-			if _, err := os.Stat(ymlpath); !os.IsNotExist(err) {
+			if _, serr := os.Stat(ymlpath); !os.IsNotExist(serr) {
 				yamlFile = ymlpath
 			}
 		}
 
 		if len(yamlFile) == 0 {
 			ymlpath := filepath.Join(target, "stack.yml")
-			if _, err := os.Stat(ymlpath); !os.IsNotExist(err) {
+			if _, serr := os.Stat(ymlpath); !os.IsNotExist(serr) {
 				yamlFile = ymlpath
 			}
 		}
@@ -79,18 +79,22 @@ func (f *faas) Build(ctx context.Context, msg *BuildRequest) (*Response, error) 
 	}
 
 	arg := commands.BuildArguments{
-		YamlFile:     yamlFile,
-		Services:     parsedServices,
-		Filter:       msg.Filter,
-		Regex:        msg.Regex,
-		Image:        msg.Image,
-		Handler:      msg.Handler,
-		FunctionName: msg.Name,
-		Language:     msg.Language,
-		Nocache:      msg.NoCache,
-		Squash:       msg.Squash,
-		Parallel:     int(msg.Parallel),
-		Shrinkwrap:   msg.Shrinkwrap,
+		FaasArguments: commands.FaasArguments{
+			YamlFile: yamlFile,
+			Filter:   msg.Filter,
+			Regex:    msg.Regex,
+		},
+		SharedArguments: commands.SharedArguments{
+			Image:        msg.Image,
+			Handler:      msg.Handler,
+			FunctionName: msg.Name,
+			Language:     msg.Language,
+		},
+		Services:   parsedServices,
+		Nocache:    msg.NoCache,
+		Squash:     msg.Squash,
+		Parallel:   int(msg.Parallel),
+		Shrinkwrap: msg.Shrinkwrap,
 	}
 
 	err := commands.Build(arg)
